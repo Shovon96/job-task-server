@@ -20,8 +20,8 @@ app.use(
 app.use(express.json());
 app.use(cookieParser());
 
-const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.5q3e1dy.mongodb.net/?retryWrites=true&w=majority`;
-
+// const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.5q3e1dy.mongodb.net/?retryWrites=true&w=majority`;
+const uri = `mongodb+srv://${process.env.USER}:${process.env.PASSWORD}@cluster0.riywk8u.mongodb.net/?retryWrites=true&w=majority`;
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
   serverApi: {
@@ -61,6 +61,12 @@ async function run() {
         })
         .send({ success: true });
     });
+
+    // app.get('/tasks', async (req, res) => {
+    //     const result = await taskCollection.find().toArray();
+    //     res.send(result);
+    //   });
+
     //get all the task
     app.get("/tasks", verifyToken, async (req, res) => {
       const email = req.query.email;
