@@ -11,10 +11,10 @@ app.use(
   cors({
     origin: [
       "http://localhost:5173",
-    //   "https://taskify-ahammad-abdullah.web.app",
-    //   "https://taskify-ahammad-abdullah.firebaseapp.com/",
+      "https://job-task-9dada.web.app",
+      "https://job-task-9dada.firebaseapp.com"
     ],
-    credentials: true,
+    // credentials: true,
   })
 );
 app.use(express.json());
@@ -31,36 +31,36 @@ const client = new MongoClient(uri, {
   },
 });
 // verify token
-const verifyToken = async (req, res, next) => {
-  const token = req.cookies?.token;
-  if (!token) {
-    return res.status(403).send({ message: " access forbidden" });
-  }
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ message: "unauthorized access" });
-    }
-    req.user = decoded;
-    next();
-  });
-};
+// const verifyToken = async (req, res, next) => {
+//   const token = req.cookies?.token;
+//   if (!token) {
+//     return res.status(403).send({ message: " access forbidden" });
+//   }
+//   jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+//     if (err) {
+//       return res.status(401).send({ message: "unauthorized access" });
+//     }
+//     req.user = decoded;
+//     next();
+//   });
+// };
 async function run() {
   try {
     const taskCollection = client.db("taskify").collection("alltasks");
 
-    app.post("/jwt", async (req, res) => {
-      const user = req.body;
-      const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1h",
-      });
-      res
-        .cookie("token", token, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        })
-        .send({ success: true });
-    });
+    // app.post("/jwt", async (req, res) => {
+    //   const user = req.body;
+    //   const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
+    //     expiresIn: "1h",
+    //   });
+    //   res
+    //     .cookie("token", token, {
+    //       httpOnly: true,
+    //       secure: true,
+    //       sameSite: "none",
+    //     })
+    //     .send({ success: true });
+    // });
 
     // app.get('/tasks', async (req, res) => {
     //     const result = await taskCollection.find().toArray();
@@ -68,7 +68,7 @@ async function run() {
     //   });
 
     //get all the task
-    app.get("/tasks", verifyToken, async (req, res) => {
+    app.get("/tasks", async (req, res) => {
       const email = req.query.email;
       const query = { email: email };
       const result = await taskCollection
@@ -78,7 +78,7 @@ async function run() {
       res.send(result);
     });
     // change status
-    app.patch("/status", verifyToken, async (req, res) => {
+    app.patch("/status", async (req, res) => {
       const id = req.query.id;
       const data = req.body;
       const query = { _id: new ObjectId(id) };
@@ -91,7 +91,7 @@ async function run() {
       res.send(result);
     });
     // delete task
-    app.delete("/delete", verifyToken, async (req, res) => {
+    app.delete("/delete", async (req, res) => {
       const id = req.query.id;
       const filter = { _id: new ObjectId(id) };
       const result = await taskCollection.deleteOne(filter);
@@ -99,14 +99,14 @@ async function run() {
     });
 
     // get single data
-    app.get("/task", verifyToken, async (req, res) => {
+    app.get("/task", async (req, res) => {
       const id = req.query.id;
       const filter = { _id: new ObjectId(id) };
       const result = taskCollection.findOne(filter);
       res.send(result);
     });
     // update task
-    app.put("/update", verifyToken, async (req, res) => {
+    app.put("/update", async (req, res) => {
       const id = req.query.id;
       const filter = { _id: new ObjectId(id) };
       const data = req.body;
@@ -123,7 +123,7 @@ async function run() {
       res.send(result);
     });
     // create task
-    app.post("/task", verifyToken, async (req, res) => {
+    app.post("/task", async (req, res) => {
       const data = req.body;
       const result = await taskCollection.insertOne(data);
       res.send(result);
